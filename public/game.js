@@ -98,6 +98,10 @@ class TicTacToe {
     }
 
     makeMove(index) {
+        if (this.board[index] !== '') {
+            return false; // Cell is already occupied
+        }
+
         this.board[index] = this.currentPlayer;
         const cell = this.cells[index];
         cell.textContent = this.currentPlayer;
@@ -108,14 +112,14 @@ class TicTacToe {
             const winner = this.getCurrentPlayerName();
             this.addToHistory(winner);
             this.showVictory(`${winner} wins!`);
-            return;
+            return true;
         }
 
         if (this.checkDraw()) {
             this.gameActive = false;
             this.addToHistory(null); // null indicates a draw
             this.updateStatus("Game ended in a draw!");
-            return;
+            return true;
         }
 
         this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
@@ -130,10 +134,7 @@ class TicTacToe {
     makeComputerMove() {
         if (!this.gameActive) return;
 
-        // Get available moves
-        const availableMoves = this.board
-            .map((cell, index) => cell === '' ? index : null)
-            .filter(cell => cell !== null);
+        const availableMoves = this.available_moves();
 
         // Make a strategic move
         let move = this.findWinningMove(availableMoves) || 
@@ -144,13 +145,28 @@ class TicTacToe {
         this.makeMove(move);
     }
 
+    available_moves() {
+        return this.board
+            .map((cell, index) => cell === '' ? index : null)
+            .filter(cell => cell !== null);
+    }
+
     findWinningMove(availableMoves) {
         return this.findBestMove(availableMoves, this.currentPlayer);
     }
 
     findBlockingMove(availableMoves) {
         const opponent = this.currentPlayer === 'X' ? 'O' : 'X';
-        return this.findBestMove(availableMoves, opponent);
+        // Try each available move and see if it would result in a win for the opponent
+        for (let move of availableMoves) {
+            this.board[move] = opponent;
+            if (this.checkWin(false)) {
+                this.board[move] = '';
+                return move;
+            }
+            this.board[move] = '';
+        }
+        return null;
     }
 
     findBestMove(availableMoves, player) {
@@ -313,7 +329,12 @@ class TicTacToe {
     }
 }
 
-// Initialize the game when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    new TicTacToe();
-});
+// Export the TicTacToe class for testing
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = TicTacToe;
+} else {
+    // Initialize the game when the page loads in browser
+    document.addEventListener('DOMContentLoaded', () => {
+        new TicTacToe();
+    });
+}
