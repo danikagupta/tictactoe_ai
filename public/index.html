@@ -8,7 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
+        <div class="container">
         <h1>Tic-Tac-Toe</h1>
         <div class="game-setup">
             <div class="player-setup">
@@ -46,6 +47,23 @@
         <div id="victory-overlay" class="victory-overlay hidden">
             <div class="victory-message"></div>
         </div>
+    </div>
+    <div class="history-panel">
+        <h2>Game History</h2>
+        <div class="history-stats">
+            <div class="stat-box">
+                <h3>Total Games</h3>
+                <p id="total-games">0</p>
+            </div>
+            <div class="stat-box">
+                <h3>Draws</h3>
+                <p id="total-draws">0</p>
+            </div>
+        </div>
+        <div class="history-list" id="history-list">
+            <!-- Game history entries will be added here -->
+        </div>
+    </div>
     </div>
     <script src="game.js"></script>
 </body>

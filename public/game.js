@@ -7,6 +7,18 @@ class TicTacToe {
         this.player2 = { name: 'Computer', type: 'computer', symbol: 'O' };
         this.victoryOverlay = document.getElementById('victory-overlay');
         this.victoryMessage = document.querySelector('.victory-message');
+        this.historyList = document.getElementById('history-list');
+        this.totalGamesElement = document.getElementById('total-games');
+        this.totalDrawsElement = document.getElementById('total-draws');
+        
+        // Initialize game statistics
+        this.stats = {
+            totalGames: 0,
+            totalDraws: 0
+        };
+
+        // Load history from localStorage if available
+        this.loadHistory();
         
         this.winningCombinations = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
@@ -93,12 +105,15 @@ class TicTacToe {
 
         if (this.checkWin()) {
             this.gameActive = false;
-            this.showVictory(`${this.getCurrentPlayerName()} wins!`);
+            const winner = this.getCurrentPlayerName();
+            this.addToHistory(winner);
+            this.showVictory(`${winner} wins!`);
             return;
         }
 
         if (this.checkDraw()) {
             this.gameActive = false;
+            this.addToHistory(null); // null indicates a draw
             this.updateStatus("Game ended in a draw!");
             return;
         }
@@ -206,6 +221,91 @@ class TicTacToe {
 
     hideVictoryOverlay() {
         this.victoryOverlay.classList.add('hidden');
+    }
+
+    addToHistory(winner) {
+        const timestamp = new Date().toLocaleString();
+        const gameResult = {
+            winner: winner,
+            player1: this.player1.name,
+            player2: this.player2.name,
+            timestamp: timestamp
+        };
+
+        // Create history entry element
+        const entry = document.createElement('div');
+        entry.className = `history-entry ${winner ? 'win' : 'draw'}`;
+        
+        const resultText = winner ? 
+            `<div class="winner">${winner} won!</div>` :
+            `<div class="winner">Draw</div>`;
+            
+        entry.innerHTML = `
+            ${resultText}
+            <div class="players">${this.player1.name} vs ${this.player2.name}</div>
+            <div class="timestamp">${timestamp}</div>
+        `;
+
+        // Add to the beginning of the history list
+        this.historyList.insertBefore(entry, this.historyList.firstChild);
+
+        // Update stats
+        this.stats.totalGames++;
+        if (!winner) this.stats.totalDraws++;
+
+        // Update display
+        this.totalGamesElement.textContent = this.stats.totalGames;
+        this.totalDrawsElement.textContent = this.stats.totalDraws;
+
+        // Save to localStorage
+        this.saveHistory();
+    }
+
+    loadHistory() {
+        const savedStats = localStorage.getItem('tictactoe_stats');
+        if (savedStats) {
+            this.stats = JSON.parse(savedStats);
+            this.totalGamesElement.textContent = this.stats.totalGames;
+            this.totalDrawsElement.textContent = this.stats.totalDraws;
+        }
+
+        const savedHistory = localStorage.getItem('tictactoe_history');
+        if (savedHistory) {
+            const history = JSON.parse(savedHistory);
+            history.forEach(game => {
+                const entry = document.createElement('div');
+                entry.className = `history-entry ${game.winner ? 'win' : 'draw'}`;
+                
+                const resultText = game.winner ? 
+                    `<div class="winner">${game.winner} won!</div>` :
+                    `<div class="winner">Draw</div>`;
+                    
+                entry.innerHTML = `
+                    ${resultText}
+                    <div class="players">${game.player1} vs ${game.player2}</div>
+                    <div class="timestamp">${game.timestamp}</div>
+                `;
+                
+                this.historyList.appendChild(entry);
+            });
+        }
+    }
+
+    saveHistory() {
+        // Save stats
+        localStorage.setItem('tictactoe_stats', JSON.stringify(this.stats));
+
+        // Save last 20 games
+        const historyEntries = Array.from(this.historyList.children)
+            .slice(0, 20)
+            .map(entry => ({
+                winner: entry.querySelector('.winner').textContent.replace(' won!', ''),
+                player1: entry.querySelector('.players').textContent.split(' vs ')[0],
+                player2: entry.querySelector('.players').textContent.split(' vs ')[1],
+                timestamp: entry.querySelector('.timestamp').textContent
+            }));
+
+        localStorage.setItem('tictactoe_history', JSON.stringify(historyEntries));
     }
 
     checkDraw() {

@@ -11,6 +11,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 2rem;
+}
+
+.app-container {
+    display: flex;
+    gap: 2rem;
+    max-width: 1200px;
+    width: 100%;
+    align-items: flex-start;
 }
 
 .container {
@@ -159,7 +168,94 @@ button:hover {
     }
 }
 
-@media (max-width: 480px) {
+.history-panel {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    min-width: 300px;
+    max-width: 400px;
+}
+
+.history-panel h2 {
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+.history-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-box {
+    background: #f7fafc;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-box h3 {
+    color: #4a5568;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-box p {
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.history-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.history-entry {
+    background: #f7fafc;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.8rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.history-entry:hover {
+    transform: translateY(-2px);
+}
+
+.history-entry .winner {
+    color: #2d3748;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+}
+
+.history-entry .players {
+    color: #4a5568;
+    font-size: 0.9rem;
+}
+
+.history-entry .timestamp {
+    color: #718096;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.history-entry.draw {
+    border-left: 4px solid #718096;
+}
+
+.history-entry.win {
+    border-left: 4px solid #48bb78;
+}
+
+@media (max-width: 900px) {
     .container {
         padding: 1rem;
     }
